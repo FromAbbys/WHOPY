@@ -1,0 +1,42 @@
+import socket
+
+
+def IANA_search(alvo):
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect(("whois.iana.org", 43))
+
+    teste = '{}\r\n' .format(alvo)
+    conversao = bytes(teste, 'UTF-8')
+    s.send(conversao)
+
+    resposta = s.recv(1024)
+
+    conversao = resposta.decode('UTF-8')
+
+    whois_certo = conversao.split()[19]
+
+    return whois_certo
+
+def target_whois(alvo):
+
+    corret_whois = IANA_search(alvo)
+
+    ns = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    ns.connect((corret_whois, 43))
+    
+    testee = '{}\r\n' .format(alvo)
+    conversion = bytes(testee, 'UTF-8')
+    ns.send(conversion)
+
+    resp = ns.recv(1024)
+    try:
+        decode = resp.decode('UTF-8')
+    except:
+        decode = resp.decode("latin-1")
+    
+    print(decode)
+
+
+target = input("site:\n")
+target_whois(target)
